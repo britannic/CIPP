@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { CippPageList } from 'src/components'
-import { cellBooleanFormatter, cellDateFormatter } from '../../../components/cipp'
+import { CippPageList } from 'src/components/layout/CippPage'
+import { cellBooleanFormatter, cellDateFormatter } from 'src/components/tables'
 
 //TODO: Add CellBoolean
 const columns = [
@@ -21,14 +21,14 @@ const columns = [
     selector: (row) => row['Enabled'],
     name: 'Enabled',
     sortable: true,
-    cell: cellBooleanFormatter(),
+    cell: cellBooleanFormatter({ warning: true, colourless: true }),
     exportSelector: 'Enabled',
   },
   {
     selector: (row) => row['ExcludedSenders'],
     name: 'Excluded Senders',
     sortable: true,
-    cell: cellBooleanFormatter(),
+    cell: cellBooleanFormatter({ warning: true, colourless: true, noDataIsFalse: true }),
     exportSelector: 'ExcludedSenders',
   },
   {
@@ -40,7 +40,7 @@ const columns = [
   },
   {
     selector: (row) => row['WhenChangedUTC'],
-    name: 'Last Change Date',
+    name: 'Last Change Date (Local)',
     sortable: true,
     cell: cellDateFormatter(),
     exportSelector: 'WhenChangedUTC',

@@ -1,4 +1,4 @@
-import { baseApi } from './baseApi'
+import { baseApi } from 'src/store/api/baseApi'
 
 export const appApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,6 +20,11 @@ export const appApi = baseApi.injectEndpoints({
         params: { localversion: localVersion },
       }),
     }),
+    loadDash: builder.query({
+      query: (localVersion) => ({
+        path: '/api/GetDashboard',
+      }),
+    }),
     execPermissionsAccessCheck: builder.query({
       query: () => ({
         path: '/api/ExecAccessChecks',
@@ -27,15 +32,6 @@ export const appApi = baseApi.injectEndpoints({
           Permissions: true,
         },
       }),
-      transformResponse: (result) => {
-        if (!result) {
-          return []
-        }
-        if (!Array.isArray(result.Results)) {
-          return [result.Results]
-        }
-        return result.Results
-      },
     }),
     execNotificationConfig: builder.query({
       query: ({
@@ -75,17 +71,6 @@ export const appApi = baseApi.injectEndpoints({
         },
         method: 'post',
       }),
-      transformResponse: (response) => {
-        if (!response?.Results) {
-          return []
-        }
-        return response?.Results.map((res) =>
-          res
-            .replace('<br>', '')
-            .split(': ')
-            .reduce((pv, cv) => ({ tenantDomain: pv, result: cv })),
-        )
-      },
     }),
     execClearCache: builder.query({
       query: () => ({
@@ -121,6 +106,7 @@ export const {
   useLoadVersionLocalQuery,
   useLoadVersionRemoteQuery,
   useLoadVersionsQuery,
+  useLoadDashQuery,
   useExecPermissionsAccessCheckQuery,
   useLazyExecPermissionsAccessCheckQuery,
   useExecTenantsAccessCheckQuery,
@@ -131,4 +117,5 @@ export const {
   useLazyListNotificationConfigQuery,
   useLazyGenericPostRequestQuery,
   useLazyGenericGetRequestQuery,
+  useGenericGetRequestQuery,
 } = appApi

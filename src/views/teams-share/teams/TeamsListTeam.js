@@ -1,15 +1,15 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import TenantSelector from '../../../components/cipp/TenantSelector'
-import CippDatatable from '../../../components/cipp/CippDatatable'
-import { CButton, CCard, CCardBody, CCardHeader, CCardTitle } from '@coreui/react'
+import { CButton } from '@coreui/react'
 import { faEye, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom'
+import { CippPageList } from 'src/components/layout'
+import { CellTip } from 'src/components/tables'
 
 const TeamsList = () => {
   const tenant = useSelector((state) => state.app.currentTenant)
-  const dropdown = (row, rowIndex, formatExtraData) => (
+  const Actions = (row, rowIndex, formatExtraData) => (
     <>
       <Link
         to={`/teams-share/teams/view-team-settings?tenantDomain=${tenant.defaultDomainName}&groupId=${row.id}`}
@@ -32,26 +32,31 @@ const TeamsList = () => {
     {
       name: 'Name',
       selector: (row) => row['displayName'],
-      sort: true,
+      sortable: true,
+      cell: (row) => CellTip(row['displayName']),
       exportSelector: 'displayName',
     },
     {
       name: 'Description',
       selector: (row) => row['description'],
-      sort: true,
+      sortable: true,
+      cell: (row) => CellTip(row['description']),
       exportSelector: 'description',
     },
     {
       name: 'Visibility',
       selector: (row) => row['visibility'],
-      sort: true,
+      sortable: true,
       exportSelector: 'visibility',
+      maxWidth: '100px',
     },
     {
       name: 'Mail nickname',
       selector: (row) => row['mailNickname'],
-      sort: true,
+      sortable: true,
+      cell: (row) => CellTip(row['mailNickname']),
       exportSelector: 'mailNickname',
+      maxWidth: '200px',
     },
     {
       name: 'ID',
@@ -60,30 +65,21 @@ const TeamsList = () => {
     },
     {
       name: 'Actions',
-      cell: dropdown,
+      cell: Actions,
+      maxWidth: '80px',
     },
   ]
 
   return (
-    <div>
-      <TenantSelector />
-      <hr />
-      <CCard className="page-card">
-        <CCardHeader>
-          <CCardTitle className="text-primary">Teams</CCardTitle>
-        </CCardHeader>
-        <CCardBody>
-          {Object.keys(tenant).length === 0 && <span>Select a tenant to get started.</span>}
-          <CippDatatable
-            keyField="id"
-            reportName={`${tenant?.defaultDomainName}-Teams-List`}
-            path="/api/ListTeams?type=list"
-            columns={columns}
-            params={{ TenantFilter: tenant?.defaultDomainName }}
-          />
-        </CCardBody>
-      </CCard>
-    </div>
+    <CippPageList
+      title="Teams"
+      datatable={{
+        columns,
+        path: '/api/ListTeams?type=list',
+        reportName: `${tenant?.defaultDomainName}-Teams-List`,
+        params: { TenantFilter: tenant?.defaultDomainName },
+      }}
+    />
   )
 }
 

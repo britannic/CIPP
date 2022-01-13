@@ -1,17 +1,25 @@
 // this will catch all errors, or any actions with prop `error` set
 // set action.hideToastError to `true` to ignore this middleware
-import { showToast } from '../features/toasts'
+import { showToast } from 'src/store/features/toasts'
 import { isRejectedWithValue } from '@reduxjs/toolkit'
 
 export const errorMiddleware =
   ({ dispatch }) =>
   (next) =>
   (action) => {
-    if (isRejectedWithValue(action) && !action.error?.hideToastError) {
+    if (
+      isRejectedWithValue(action) &&
+      !action.error?.hideToastError &&
+      action.payload.message !== 'canceled'
+    ) {
       console.error(action)
-      const message = action.payload?.message || 'A generic error has occurred.'
+      if (action.payload.data === 'Backend call failure') {
+        action.payload.data =
+          'The Azure Function has taken too long to respond. Try selecting a different report or a single tenant instead'
+      }
+      const message = action.payload?.data || 'A generic error has occurred.'
 
-      const toastError = process.env.NODE_ENV === 'production' ? action.payload || {} : action
+      const toastError = action.payload
 
       dispatch(
         showToast({

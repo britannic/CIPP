@@ -1,122 +1,76 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { faCog, faEnvelope } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCardTitle,
-  CSpinner,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableRow,
-} from '@coreui/react'
-import { CellBoolean } from '../../../components/cipp'
-import { useListMailboxDetailsQuery } from '../../../store/api/mailbox'
+import { faCog } from '@fortawesome/free-solid-svg-icons'
+import { CellBoolean } from 'src/components/tables'
+import { useListMailboxDetailsQuery } from 'src/store/api/mailbox'
+import { ListGroupContentCard } from 'src/components/contentcards'
 
-const formatter = (cell) => CellBoolean({ cell })
+const formatter = (cell, warning = false, reverse = false, colourless = false) =>
+  CellBoolean({ cell, warning, reverse, colourless })
 
-const columns = [
-  {
-    text: 'User Not Restricted',
-    dataField: 'BlockedForSpam',
-    formatter: (cell) => CellBoolean({ cell: !cell }),
-  },
-  {
-    text: 'Litigation Hold',
-    dataField: 'LitiationHold',
-    formatter,
-  },
-  {
-    text: 'Hidden from Address Lists',
-    dataField: 'HiddenFromAddressLists',
-    formatter,
-  },
-  {
-    text: 'EWS Enabled',
-    dataField: 'EWSEnabled',
-    formatter,
-  },
-  {
-    text: 'MAPI Enabled',
-    dataField: 'MailboxMAPIEnabled',
-    formatter,
-  },
-  {
-    text: 'OWA Enabled',
-    dataField: 'MailboxOWAEnabled',
-    formatter,
-  },
-  {
-    text: 'IMAP Enabled',
-    dataField: 'MailboxImapEnabled',
-    formatter,
-  },
-  {
-    text: 'POP Enabled',
-    dataField: 'MailboxPopEnabled',
-    formatter,
-  },
-  {
-    text: 'Active Sync Enabled',
-    dataField: 'MailboxActiveSyncEnabled',
-    formatter,
-  },
-  {
-    text: 'Forward and Deliver',
-    dataField: 'ForwardAndDeliver',
-    formatter,
-  },
-  {
-    text: 'Forwarding Address',
-    dataField: 'ForwardingAddress',
-    formatter,
-  },
-]
-
-export default function UserEmailSettings({ userId, tenantDomain }) {
+export default function UserEmailSettings({ userId, tenantDomain, className = null }) {
   const { data: details, isFetching, error } = useListMailboxDetailsQuery({ userId, tenantDomain })
+  const content = [
+    {
+      heading: 'User Not Restricted',
+      body: formatter(details?.BlockedForSpam, false, true),
+    },
+    {
+      heading: 'Litigation Hold',
+      body: formatter(details?.LitiationHold, false, false, true),
+    },
+    {
+      heading: 'Hidden from Address Lists',
+      body: formatter(details?.HiddenFromAddressLists, false, false, true),
+    },
+    {
+      heading: 'EWS Enabled',
+      body: formatter(details?.EWSEnabled, false, false, true),
+    },
+    {
+      heading: 'MAPI Enabled',
+      body: formatter(details?.MailboxMAPIEnabled, false, false, true),
+    },
+    {
+      heading: 'OWA Enabled',
+      body: formatter(details?.MailboxOWAEnabled, false, false, true),
+    },
+    {
+      heading: 'IMAP Enabled',
+      body: formatter(details?.MailboxImapEnabled, false, false, true),
+    },
+    {
+      heading: 'POP Enabled',
+      body: formatter(details?.MailboxPopEnabled, false, false, true),
+    },
+    {
+      heading: 'Active Sync Enabled',
+      body: formatter(details?.MailboxActiveSyncEnabled, false, false, true),
+    },
+    {
+      heading: 'Forward and Deliver',
+      body: formatter(details?.ForwardAndDeliver, false, false, true),
+    },
+    {
+      heading: 'Forwarding Address',
+      body: formatter(details?.ForwardingAddress, false, false, true),
+    },
+  ]
   return (
-    <CCard className="options-card">
-      <CCardHeader className="d-flex justify-content-between">
-        <CCardTitle>Email Settings</CCardTitle>
-        <div>
-          <FontAwesomeIcon icon={faEnvelope} className="me-2" />
-          <FontAwesomeIcon icon={faCog} />
-        </div>
-      </CCardHeader>
-      <CCardBody>
-        {isFetching && <CSpinner />}
-        {!isFetching && error && <span>Error loading email settings</span>}
-        {!isFetching && !error && (
-          <CTable>
-            <CTableBody>
-              {columns.map((column, index) => {
-                return (
-                  <CTableRow key={index}>
-                    <CTableDataCell>{column.text}</CTableDataCell>
-                    {!column.formatter && (
-                      <CTableDataCell>{details[column.dataField] ?? 'n/a'}</CTableDataCell>
-                    )}
-                    {column.formatter && (
-                      <CTableDataCell>
-                        {column.formatter(details[column.dataField], details)}
-                      </CTableDataCell>
-                    )}
-                  </CTableRow>
-                )
-              })}
-            </CTableBody>
-          </CTable>
-        )}
-      </CCardBody>
-    </CCard>
+    <ListGroupContentCard
+      title="Email Settings"
+      icon={faCog}
+      content={content}
+      className={className}
+      isFetching={isFetching}
+      error={error}
+      errorMsg="Unable to fetch email settings"
+    />
   )
 }
 
 UserEmailSettings.propTypes = {
   tenantDomain: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
+  className: PropTypes.string,
 }

@@ -11,36 +11,50 @@ import {
   CRow,
   CSpinner,
 } from '@coreui/react'
-import useQuery from '../../../hooks/useQuery'
+import useQuery from 'src/hooks/useQuery'
 import { useDispatch } from 'react-redux'
 import { Form } from 'react-final-form'
-import { RFFCFormInput, ModalService, CippPage } from '../../../components'
+import { CippPage } from 'src/components/layout'
+import { ModalService } from 'src/components/utilities'
+import { RFFCFormInput } from 'src/components/forms/RFFComponents'
 import { useListTenantQuery } from 'src/store/api/tenants'
 import { useLazyGenericPostRequestQuery } from 'src/store/api/app'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 
 const EditTenant = () => {
   const dispatch = useDispatch()
   let query = useQuery()
-  const tenantDomain = query.get('TenantFilter')
+  const tenantDomain = query.get('tenantFilter')
+  const customerId = query.get('customerId')
   const [queryError, setQueryError] = useState(false)
   const [genericPostRequest, postResults] = useLazyGenericPostRequestQuery()
 
-  const { data: tenant = {}, isFetching, error, isSuccess } = useListTenantQuery(tenantDomain)
+  const {
+    data: tenant = {},
+    isFetching,
+    error,
+    isSuccess,
+  } = useListTenantQuery(tenantDomain, customerId)
 
   useEffect(() => {
-    if (!tenantDomain) {
+    if (!tenantDomain || !customerId) {
       ModalService.open({
-        body: 'Error: Invalid request. Could not load requested tenant.',
+        body: 'Error: INvalid request. Could not load requested tenant.',
         title: 'Invalid Request',
       })
       setQueryError(true)
     }
-  }, [tenantDomain, dispatch])
+  }, [tenantDomain, customerId, dispatch])
 
   const onSubmit = (values) => {
-    // @todo bind this
-    //window.alert(JSON.stringify(values))
-    genericPostRequest({ path: '/api/EditTenant', values })
+    const shippedValues = {
+      tenantid: tenantDomain,
+      displayName: values.displayName,
+      defaultDomainName: values.defaultDomainName,
+      customerId: customerId,
+    }
+    genericPostRequest({ path: '/api/EditTenant', values: shippedValues })
   }
   const initialValues = {
     ...tenant[0],
@@ -87,16 +101,25 @@ const EditTenant = () => {
                               <CCol md={6}>
                                 <CButton type="submit" disabled={submitting}>
                                   Edit Tenant
+                                  {postResults.isFetching && (
+                                    <FontAwesomeIcon
+                                      icon={faCircleNotch}
+                                      spin
+                                      className="ms-2"
+                                      size="1x"
+                                    />
+                                  )}
                                 </CButton>
                               </CCol>
                             </CRow>
-                            {postResults.isFetching && (
-                              <CCallout color="info">
-                                <CSpinner>Loading</CSpinner>
-                              </CCallout>
-                            )}
                             {postResults.isSuccess && (
-                              <CCallout color="success">{postResults.data.Results}</CCallout>
+                              <CCallout color="success">
+                                {postResults.data.Results}
+                                <br></br>
+                                <br></br>
+                                Please note that due to using Windows Graph, there can be a short
+                                delay before the change is seen.
+                              </CCallout>
                             )}
                           </CForm>
                         )

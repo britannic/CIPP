@@ -7,12 +7,11 @@ import {
   CDropdownToggle,
   CLink,
 } from '@coreui/react'
-import { faUser, faBook } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faBook, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom'
-import { authApi } from '../../store/api/auth'
-import CippProfile from '../CippProfile'
-import CippOffcanvas from '../cipp/CippOffcanvas'
+import { authApi } from 'src/store/api/auth'
+import { CippProfile, CippOffcanvas } from 'src/components/utilities'
 
 const AppHeaderDropdown = () => {
   const [profileVisible, setProfileVisible] = useState(false)
@@ -34,6 +33,10 @@ const AppHeaderDropdown = () => {
           <Link className="dropdown-item" to="/cipp/logs">
             <FontAwesomeIcon icon={faBook} className="me-2" />
             Logbook
+          </Link>
+          <Link className="dropdown-item" to="/logout">
+            <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
+            Logout
           </Link>
         </CDropdownMenu>
       </CDropdown>

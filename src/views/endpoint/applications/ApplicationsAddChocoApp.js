@@ -1,21 +1,12 @@
 import React from 'react'
-import {
-  CAlert,
-  CCol,
-  CRow,
-  CForm,
-  CListGroup,
-  CListGroupItem,
-  CCallout,
-  CSpinner,
-} from '@coreui/react'
+import { CCol, CRow, CForm, CListGroup, CListGroupItem, CCallout, CSpinner } from '@coreui/react'
 import { Field, FormSpy } from 'react-final-form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
-import Wizard from '../../../components/Wizard'
-import WizardTableField from '../../../components/WizardTableField'
+import { CippWizard } from 'src/components/layout'
+import { WizardTableField } from 'src/components/tables'
 import PropTypes from 'prop-types'
-import { RFFCFormInput, RFFCFormRadio, RFFCFormSwitch } from '../../../components/RFFComponents'
+import { RFFCFormInput, RFFCFormRadio, RFFCFormSwitch } from 'src/components/forms'
 import { useLazyGenericPostRequestQuery } from 'src/store/api/app'
 
 const Error = ({ name }) => (
@@ -24,10 +15,10 @@ const Error = ({ name }) => (
     subscription={{ touched: true, error: true }}
     render={({ meta: { touched, error } }) =>
       touched && error ? (
-        <CAlert color="danger">
+        <CCallout color="danger">
           <FontAwesomeIcon icon={faExclamationTriangle} color="danger" />
           {error}
-        </CAlert>
+        </CCallout>
       ) : null
     }
   />
@@ -55,12 +46,12 @@ const ApplyStandard = () => {
   }
 
   return (
-    <Wizard
+    <CippWizard
       initialValues={{ ...formValues }}
       onSubmit={handleSubmit}
       wizardTitle="Chocolatey App Wizard"
     >
-      <Wizard.Page
+      <CippWizard.Page
         title="Tenant Choice"
         description="Choose the tenants to create the standard for."
       >
@@ -74,7 +65,7 @@ const ApplyStandard = () => {
             <WizardTableField
               reportName="Add-Choco-App-Tenant-Selector"
               keyField="defaultDomainName"
-              path="/api/ListTenants"
+              path="/api/ListTenants?AllTenantSelector=true"
               columns={[
                 {
                   name: 'Display Name',
@@ -95,8 +86,11 @@ const ApplyStandard = () => {
         </Field>
         <Error name="selectedTenants" />
         <hr className="my-4" />
-      </Wizard.Page>
-      <Wizard.Page title="Select Standards" description="Select which standards you want to apply.">
+      </CippWizard.Page>
+      <CippWizard.Page
+        title="Select Standards"
+        description="Select which standards you want to apply."
+      >
         <center>
           <h3 className="text-primary">Step 2</h3>
           <h5 className="card-title mb-4">Supply the app information</h5>
@@ -125,7 +119,7 @@ const ApplyStandard = () => {
           <RFFCFormSwitch name="DisableRestart" label="Disable Restart" />
 
           <RFFCFormRadio
-            value=""
+            value="On"
             name="AssignTo"
             label="Do not assign"
             validate={false}
@@ -149,8 +143,8 @@ const ApplyStandard = () => {
           ></RFFCFormRadio>
         </CForm>
         <hr className="my-4" />
-      </Wizard.Page>
-      <Wizard.Page title="Review and Confirm" description="Confirm the settings to apply">
+      </CippWizard.Page>
+      <CippWizard.Page title="Review and Confirm" description="Confirm the settings to apply">
         <center>
           <h3 className="text-primary">Step 3</h3>
           <h5 className="card-title mb-4">Confirm and apply</h5>
@@ -203,8 +197,8 @@ const ApplyStandard = () => {
         )}
         {postResults.isSuccess && <CCallout color="success">{postResults.data.Results}</CCallout>}
         <hr className="my-4" />
-      </Wizard.Page>
-    </Wizard>
+      </CippWizard.Page>
+    </CippWizard>
   )
 }
 

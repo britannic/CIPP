@@ -1,38 +1,36 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import TenantSelector from '../../../components/cipp/TenantSelector'
-import CippDatatable from '../../../components/cipp/CippDatatable'
-import { CCard, CCardBody, CCardHeader, CCardTitle } from '@coreui/react'
+import { CippPageList } from 'src/components/layout'
 
 const columns = [
   {
     name: 'User Prinicipal Name',
     selector: (row) => row['UPN'],
-    sort: true,
+    sortable: true,
     exportSelector: 'UPN',
   },
   {
     name: 'Last Active',
     selector: (row) => row['LastActive'],
-    sort: true,
+    sortable: true,
     exportSelector: 'LastActive',
   },
   {
     name: 'Meeting Count',
     selector: (row) => row['MeetingCount'],
-    sort: true,
+    sortable: true,
     exportSelector: 'MeetingCount',
   },
   {
     name: 'Call Count',
     selector: (row) => row['CallCount'],
-    sort: true,
+    sortable: true,
     exportSelector: 'CallCount',
   },
   {
     name: 'Chat Count',
     selector: (row) => row['TeamsChat'],
-    sort: true,
+    sortable: true,
     exportSelector: 'TeamsChat',
   },
 ]
@@ -41,25 +39,15 @@ const TeamsActivityList = () => {
   const tenant = useSelector((state) => state.app.currentTenant)
 
   return (
-    <div>
-      <TenantSelector />
-      <hr />
-      <CCard className="page-card">
-        <CCardHeader>
-          <CCardTitle className="text-primary">Teams Activity List</CCardTitle>
-        </CCardHeader>
-        <CCardBody>
-          {Object.keys(tenant).length === 0 && <span>Select a tenant to get started.</span>}
-          <CippDatatable
-            keyField="id"
-            reportName={`${tenant?.defaultDomainName}-TeamActivity-List`}
-            path="/api/ListTeamsActivity?type=TeamsUserActivityUser"
-            columns={columns}
-            params={{ TenantFilter: tenant?.defaultDomainName }}
-          />
-        </CCardBody>
-      </CCard>
-    </div>
+    <CippPageList
+      title="Teams Activity List"
+      datatable={{
+        columns,
+        path: '/api/ListTeamsActivity?type=TeamsUserActivityUser',
+        reportName: `${tenant?.defaultDomainName}-TeamsActivity-List`,
+        params: { TenantFilter: tenant?.defaultDomainName },
+      }}
+    />
   )
 }
 

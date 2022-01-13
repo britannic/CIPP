@@ -1,8 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import TenantSelector from '../../../components/cipp/TenantSelector'
-import CippDatatable from '../../../components/cipp/CippDatatable'
-import { CCard, CCardBody, CCardHeader, CCardTitle } from '@coreui/react'
+import { CippPageList } from 'src/components/layout'
+import { CellTip } from 'src/components/tables'
 
 const OneDriveList = () => {
   const tenant = useSelector((state) => state.app.currentTenant)
@@ -10,60 +9,52 @@ const OneDriveList = () => {
     {
       name: 'Name',
       selector: (row) => row['displayName'],
-      sort: true,
+      sortable: true,
+      cell: (row) => CellTip(row['displayName']),
       exportSelector: 'displayName',
     },
     {
       name: 'UPN',
       selector: (row) => row['UPN'],
-      sort: true,
+      sortable: true,
+      cell: (row) => CellTip(row['UPN']),
       exportSelector: 'UPN',
     },
     {
       name: 'Last Active',
       selector: (row) => row['LastActive'],
-      sort: true,
+      sortable: true,
       exportSelector: 'LastActive',
     },
     {
       name: 'File Count (Total)',
       selector: (row) => row['FileCount'],
-      sort: true,
+      sortable: true,
       exportSelector: 'FileCount',
     },
     {
       name: 'Used (GB)',
       selector: (row) => row['UsedGB'],
-      sort: true,
+      sortable: true,
       exportSelector: 'UsedGB',
     },
     {
       name: 'Allocated (GB)',
       selector: (row) => row['Allocated'],
-      sort: true,
+      sortable: true,
       exportSelector: 'Allocated',
     },
   ]
   return (
-    <div>
-      <TenantSelector />
-      <hr />
-      <CCard className="page-card">
-        <CCardHeader>
-          <CCardTitle className="text-primary">OneDrive Report</CCardTitle>
-        </CCardHeader>
-        <CCardBody>
-          {Object.keys(tenant).length === 0 && <span>Select a tenant to get started.</span>}
-          <CippDatatable
-            keyField="id"
-            reportName={`${tenant?.defaultDomainName}-OneDrive-Report`}
-            path="/api/ListSites?type=OneDriveUsageAccount"
-            columns={columns}
-            params={{ TenantFilter: tenant?.defaultDomainName }}
-          />
-        </CCardBody>
-      </CCard>
-    </div>
+    <CippPageList
+      title="OneDrive List"
+      datatable={{
+        columns,
+        path: '/api/ListSites?type=OneDriveUsageAccount',
+        reportName: `${tenant?.defaultDomainName}-OneDrive-Report`,
+        params: { TenantFilter: tenant?.defaultDomainName },
+      }}
+    />
   )
 }
 

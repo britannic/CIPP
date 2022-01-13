@@ -3,14 +3,16 @@ import { useSelector } from 'react-redux'
 import { CButton, CCallout, CSpinner } from '@coreui/react'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CippPageList, ModalService } from 'src/components'
+import { CippPageList } from 'src/components/layout'
+import { ModalService } from 'src/components/utilities'
 import { useLazyGenericGetRequestQuery } from 'src/store/api/app'
+import { CellTip } from 'src/components/tables'
 
 const AutopilotListDevices = () => {
   const tenant = useSelector((state) => state.app.currentTenant)
   const [ExecuteGetRequest, getResults] = useLazyGenericGetRequestQuery()
-  const dropdown = (row, index, column) => {
-    const handleDropdownEvent = (apiurl, message) => {
+  const Actions = (row, index, column) => {
+    const handleDeleteAPDevice = (apiurl, message) => {
       ModalService.confirm({
         title: 'Confirm',
         body: <div>{message}</div>,
@@ -25,7 +27,7 @@ const AutopilotListDevices = () => {
         variant="ghost"
         color="danger"
         onClick={() =>
-          handleDropdownEvent(
+          handleDeleteAPDevice(
             `api/RemoveAPDevice?ID=${row.id}&tenantFilter=${tenant.defaultDomainName}`,
             'Do you want to delete the Autopilot Device?',
           )
@@ -41,41 +43,47 @@ const AutopilotListDevices = () => {
       selector: (row) => row['displayName'],
       name: 'Display Name',
       sortable: true,
+      cell: (row) => CellTip(row['displayName']),
       exportSelector: 'displayName',
     },
     {
       selector: (row) => row['serialNumber'],
       name: 'Serial',
       sortable: true,
+      cell: (row) => CellTip(row['serialNumber']),
       exportSelector: 'serialNumber',
     },
     {
       selector: (row) => row['model'],
       name: 'Model',
       sortable: true,
+      cell: (row) => CellTip(row['model']),
       exportSelector: 'model',
     },
     {
       selector: (row) => row['manufacturer'],
       name: 'Manufacturer',
       sortable: true,
+      cell: (row) => CellTip(row['manufacturer']),
       exportSelector: 'manufacturer',
     },
     {
       selector: (row) => row['groupTag'],
       name: 'Group Tag',
       sortable: true,
+      cell: (row) => CellTip(row['groupTag']),
       exportSelector: 'groupTag',
     },
     {
       selector: (row) => row['enrollmentState'],
       name: 'Enrollment',
       sortable: true,
+      cell: (row) => CellTip(row['enrollmentState']),
       exportSelector: 'enrollmentState',
     },
     {
       name: (row) => row['Actions'],
-      cell: dropdown,
+      cell: Actions,
     },
   ]
 

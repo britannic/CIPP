@@ -1,25 +1,12 @@
 import React from 'react'
-import {
-  CAlert,
-  CCol,
-  CRow,
-  CForm,
-  CListGroup,
-  CListGroupItem,
-  CCallout,
-  CSpinner,
-} from '@coreui/react'
+import { CCol, CRow, CForm, CListGroup, CListGroupItem, CCallout, CSpinner } from '@coreui/react'
 import { Field, FormSpy } from 'react-final-form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCheckCircle,
-  faExclamationTriangle,
-  faTimesCircle,
-} from '@fortawesome/free-solid-svg-icons'
-import Wizard from '../../../components/Wizard'
-import WizardTableField from '../../../components/WizardTableField'
+import { faCheck, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { CippWizard } from 'src/components/layout'
+import { WizardTableField } from 'src/components/tables'
 import PropTypes from 'prop-types'
-import { RFFCFormInput, RFFCFormSwitch } from '../../../components/RFFComponents'
+import { RFFCFormInput, RFFCFormSwitch } from 'src/components/forms'
 import { useLazyGenericPostRequestQuery } from 'src/store/api/app'
 
 const Error = ({ name }) => (
@@ -28,10 +15,10 @@ const Error = ({ name }) => (
     subscription={{ touched: true, error: true }}
     render={({ meta: { touched, error } }) =>
       touched && error ? (
-        <CAlert color="danger">
+        <CCallout color="danger">
           <FontAwesomeIcon icon={faExclamationTriangle} color="danger" />
           {error}
-        </CAlert>
+        </CCallout>
       ) : null
     }
   />
@@ -59,12 +46,15 @@ const ApplyStandard = () => {
   }
 
   return (
-    <Wizard
+    <CippWizard
       initialValues={{ ...formValues }}
       onSubmit={handleSubmit}
       wizardTitle="Autopilot Status Page Wizard"
     >
-      <Wizard.Page title="Tenant Choice" description="Choose the tenants to create the ESP for.">
+      <CippWizard.Page
+        title="Tenant Choice"
+        description="Choose the tenants to create the ESP for."
+      >
         <center>
           <h3 className="text-primary">Step 1</h3>
           <h5 className="card-title mb-4">Choose tenants</h5>
@@ -96,8 +86,8 @@ const ApplyStandard = () => {
         </Field>
         <Error name="selectedTenants" />
         <hr className="my-4" />
-      </Wizard.Page>
-      <Wizard.Page title="Select Options" description="Select which options you want to apply.">
+      </CippWizard.Page>
+      <CippWizard.Page title="Select Options" description="Select which options you want to apply.">
         <center>
           <h3 className="text-primary">Step 2</h3>
           <h5 className="card-title mb-4">Supply the ESP Information</h5>
@@ -141,8 +131,8 @@ const ApplyStandard = () => {
           />
         </CForm>
         <hr className="my-4" />
-      </Wizard.Page>
-      <Wizard.Page title="Review and Confirm" description="Confirm the settings to apply">
+      </CippWizard.Page>
+      <CippWizard.Page title="Review and Confirm" description="Confirm the settings to apply">
         <center>
           <h3 className="text-primary">Step 3</h3>
           <h5 className="card-title mb-4">Confirm and apply</h5>
@@ -163,7 +153,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.TimeOutInMinutes ? faCheckCircle : faTimesCircle}
+                            icon={props.values.TimeOutInMinutes ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -171,7 +161,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.ShowProgress ? faCheckCircle : faTimesCircle}
+                            icon={props.values.ShowProgress ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -179,7 +169,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.EnableLog ? faCheckCircle : faTimesCircle}
+                            icon={props.values.EnableLog ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -187,7 +177,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.OBEEOnly ? faCheckCircle : faTimesCircle}
+                            icon={props.values.OBEEOnly ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -195,7 +185,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.blockDevice ? faCheckCircle : faTimesCircle}
+                            icon={props.values.blockDevice ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -203,7 +193,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.Allowretry ? faCheckCircle : faTimesCircle}
+                            icon={props.values.Allowretry ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -211,7 +201,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.AllowReset ? faCheckCircle : faTimesCircle}
+                            icon={props.values.AllowReset ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -219,7 +209,7 @@ const ApplyStandard = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.AllowFail ? faCheckCircle : faTimesCircle}
+                            icon={props.values.AllowFail ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                       </CListGroup>
@@ -237,8 +227,8 @@ const ApplyStandard = () => {
         )}
         {postResults.isSuccess && <CCallout color="success">{postResults.data.Results}</CCallout>}{' '}
         <hr className="my-4" />
-      </Wizard.Page>
-    </Wizard>
+      </CippWizard.Page>
+    </CippWizard>
   )
 }
 

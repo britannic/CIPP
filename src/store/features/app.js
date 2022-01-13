@@ -8,6 +8,8 @@ const initialState = {
   currentTenant: {},
   themes: ['default', 'cyberdrain', 'impact'],
   currentTheme: 'default',
+  tablePageSize: 25,
+  pageSizes: [25, 50, 100, 200, 500],
 }
 
 export const appSlice = createSlice({
@@ -26,8 +28,14 @@ export const appSlice = createSlice({
     setCurrentTheme: (state, action) => {
       state.currentTheme = action.payload?.theme
     },
+    setCurrentPageSize: (state, action) => {
+      state.tablePageSize = action.payload?.pageSize
+    },
     setSidebarVisible: (state, action) => {
       state.sidebarShow = action.payload?.visible
+    },
+    setDefaultusageLocation: (state, action) => {
+      state.usageLocation = action.payload?.usageLocation
     },
   },
 })
@@ -36,8 +44,10 @@ export const {
   toggleSidebarShow,
   toggleSidebarUnfoldable,
   setCurrentTenant,
+  setCurrentPageSize,
   setCurrentTheme,
   setSidebarVisible,
+  setDefaultusageLocation,
 } = appSlice.actions
 
 export default persistReducer(

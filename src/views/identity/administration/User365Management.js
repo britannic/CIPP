@@ -1,40 +1,38 @@
 import React from 'react'
-import { CCard, CCardBody, CCardHeader, CCardTitle } from '@coreui/react'
-import { faUsers, faCog, faLaptop } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CLink } from '@coreui/react'
+import { faUsers, faLaptop } from '@fortawesome/free-solid-svg-icons'
+import { faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import PropTypes from 'prop-types'
+import { ActionContentCard } from 'src/components/contentcards'
 
-export default function User365Management({ tenantDomain, userId }) {
+export default function User365Management({ tenantDomain, userId, className }) {
+  const azureADLink = `https://portal.azure.com/${tenantDomain}/#blade/Microsoft_AAD_IAM/UserDetailsMenuBlade/Profile/userId/${userId}`
+  const endpointManagerLink = `https://endpoint.microsoft.com/${tenantDomain}/#blade/Microsoft_AAD_IAM/UserDetailsMenuBlade/Profile/userId/${userId}`
+  const actions = [
+    {
+      label: 'View in Azure AD',
+      link: azureADLink,
+      icon: faUsers,
+      target: '_blank',
+    },
+    {
+      label: 'View in Endpoint Manager',
+      link: endpointManagerLink,
+      icon: faLaptop,
+      target: '_blank',
+    },
+  ]
   return (
-    <CCard className="options-card">
-      <CCardHeader className="d-flex justify-content-between">
-        <CCardTitle>M365 Management</CCardTitle>
-        <FontAwesomeIcon icon={faCog} />
-      </CCardHeader>
-      <CCardBody>
-        <CLink
-          className="dropdown-item"
-          href={`https://portal.azure.com/${tenantDomain}/#blade/Microsoft_AAD_IAM/UserDetailsMenuBlade/Profile/userId/${userId}`}
-          target="_blank"
-        >
-          <FontAwesomeIcon icon={faUsers} className="me-2" />
-          View in Azure AD
-        </CLink>
-        <CLink
-          className="dropdown-item"
-          href={`https://endpoint.microsoft.com/${tenantDomain}/#blade/Microsoft_AAD_IAM/UserDetailsMenuBlade/Profile/userId/${userId}`}
-          target="_blank"
-        >
-          <FontAwesomeIcon icon={faLaptop} className="me-2" />
-          View in Endpoint Manager (Intune)
-        </CLink>
-      </CCardBody>
-    </CCard>
+    <ActionContentCard
+      title="M365 Management"
+      icon={faMicrosoft}
+      content={actions}
+      className={className}
+    />
   )
 }
 
 User365Management.propTypes = {
   tenantDomain: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
+  className: PropTypes.string,
 }

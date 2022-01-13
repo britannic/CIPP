@@ -1,21 +1,17 @@
 import React from 'react'
-import { CAlert, CCol, CRow, CListGroup, CListGroupItem, CCallout, CSpinner } from '@coreui/react'
+import { CCol, CRow, CListGroup, CListGroupItem, CCallout, CSpinner } from '@coreui/react'
 import { Field, FormSpy } from 'react-final-form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCheckCircle,
-  faExclamationTriangle,
-  faTimesCircle,
-} from '@fortawesome/free-solid-svg-icons'
-import Wizard from '../../../components/Wizard'
-import WizardTableField from '../../../components/WizardTableField'
+import { faCheck, faExclamationTriangle, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { CippWizard } from 'src/components/layout'
+import { WizardTableField } from 'src/components/tables'
 import PropTypes from 'prop-types'
 import {
   RFFCFormInput,
   RFFCFormRadio,
   RFFCFormSelect,
   RFFCFormTextarea,
-} from '../../../components/RFFComponents'
+} from 'src/components/forms'
 import { useLazyGenericGetRequestQuery, useLazyGenericPostRequestQuery } from 'src/store/api/app'
 import { OnChange } from 'react-final-form-listeners'
 
@@ -25,10 +21,10 @@ const Error = ({ name }) => (
     subscription={{ touched: true, error: true }}
     render={({ meta: { touched, error } }) =>
       touched && error ? (
-        <CAlert color="danger">
+        <CCallout color="danger">
           <FontAwesomeIcon icon={faExclamationTriangle} color="danger" />
           {error}
-        </CAlert>
+        </CCallout>
       ) : null
     }
   />
@@ -47,6 +43,7 @@ const AddPolicy = () => {
     values.selectedTenants.map(
       (tenant) => (values[`Select_${tenant.defaultDomainName}`] = tenant.defaultDomainName),
     )
+    values.TemplateType = values.Type
     genericPostRequest({ path: '/api/AddPolicy', values: values })
   }
   /* eslint-disable react/prop-types */
@@ -63,7 +60,7 @@ const AddPolicy = () => {
                 let template = intuneTemplates.data.filter(function (obj) {
                   return obj.GUID === value
                 })
-                console.log(template[0][set])
+                // console.log(template[0][set])
                 onChange(template[0][set])
               }}
             </OnChange>
@@ -78,12 +75,15 @@ const AddPolicy = () => {
   }
 
   return (
-    <Wizard
+    <CippWizard
       initialValues={{ ...formValues }}
       onSubmit={handleSubmit}
       wizardTitle="Add Intune policy"
     >
-      <Wizard.Page title="Tenant Choice" description="Choose the tenants to create the policy for.">
+      <CippWizard.Page
+        title="Tenant Choice"
+        description="Choose the tenants to create the policy for."
+      >
         <center>
           <h3 className="text-primary">Step 1</h3>
           <h5 className="card-title mb-4">Choose tenants</h5>
@@ -94,7 +94,7 @@ const AddPolicy = () => {
             <WizardTableField
               reportName="Add-MEM-Policy-Tenant-Selector"
               keyField="defaultDomainName"
-              path="/api/ListTenants"
+              path="/api/ListTenants?AllTenantSelector=true"
               columns={[
                 {
                   name: 'Display Name',
@@ -115,8 +115,8 @@ const AddPolicy = () => {
         </Field>
         <Error name="selectedTenants" />
         <hr className="my-4" />
-      </Wizard.Page>
-      <Wizard.Page title="Select Options" description="Select which options you want to apply.">
+      </CippWizard.Page>
+      <CippWizard.Page title="Select Options" description="Select which options you want to apply.">
         <center>
           <h3 className="text-primary">Step 2</h3>
           <h5 className="card-title mb-4">
@@ -208,8 +208,8 @@ const AddPolicy = () => {
         <WhenFieldChanges field="TemplateList" set="Displayname" />
         <WhenFieldChanges field="TemplateList" set="RAWJson" />
         <WhenFieldChanges field="TemplateList" set="Type" />
-      </Wizard.Page>
-      <Wizard.Page title="Review and Confirm" description="Confirm the settings to apply">
+      </CippWizard.Page>
+      <CippWizard.Page title="Review and Confirm" description="Confirm the settings to apply">
         <center>
           <h3 className="text-primary">Step 3</h3>
           <h5 className="card-title mb-4">Confirm and apply</h5>
@@ -230,7 +230,7 @@ const AddPolicy = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.Displayname ? faCheckCircle : faTimesCircle}
+                            icon={props.values.Displayname ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -238,7 +238,7 @@ const AddPolicy = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.Description ? faCheckCircle : faTimesCircle}
+                            icon={props.values.Description ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -246,7 +246,7 @@ const AddPolicy = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.Type ? faCheckCircle : faTimesCircle}
+                            icon={props.values.Type ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                         <CListGroupItem className="d-flex justify-content-between align-items-center">
@@ -254,7 +254,7 @@ const AddPolicy = () => {
                           <FontAwesomeIcon
                             color="#f77f00"
                             size="lg"
-                            icon={props.values.AssignTo ? faCheckCircle : faTimesCircle}
+                            icon={props.values.AssignTo ? faCheck : faTimes}
                           />
                         </CListGroupItem>
                       </CListGroup>
@@ -270,10 +270,16 @@ const AddPolicy = () => {
             <CSpinner>Loading</CSpinner>
           </CCallout>
         )}
-        {postResults.isSuccess && <CCallout color="success">{postResults.data.Results}</CCallout>}{' '}
+        {postResults.isSuccess && (
+          <CCallout color="success">
+            {postResults.data.Results.map((message, idx) => {
+              return <li key={idx}>{message}</li>
+            })}
+          </CCallout>
+        )}
         <hr className="my-4" />
-      </Wizard.Page>
-    </Wizard>
+      </CippWizard.Page>
+    </CippWizard>
   )
 }
 
