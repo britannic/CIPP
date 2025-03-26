@@ -30,3 +30,4 @@ __*
 
 # vscode debug logs
 debug.log
+app.log
